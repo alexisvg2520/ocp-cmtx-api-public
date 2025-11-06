@@ -70,5 +70,7 @@ jobs:
       - name: Helm upgrade
         run: |
           helm upgrade --install cmtx-api-public chart -n ecuaalejo2013-dev \
+            --set env.DATA_HOST=cmtx-api-data.ecuaalejo2013-dev.svc.cluster.local \
+            --set env.DATA_PORT="8080" \
             --set image.repository=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/cmtx-api-public \
             --set image.tag=${{ github.sha }}
