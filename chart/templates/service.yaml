@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.name }}
+    app.kubernetes.io/part-of: cmtx
+    app.kubernetes.io/component: api
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.name }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
