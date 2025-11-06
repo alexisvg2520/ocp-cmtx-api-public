@@ -65,7 +65,6 @@ jobs:
           openshift_token:      ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: ecuaalejo2013-dev
-      - uses: azure/setup-helm@v4
 
       - name: Deploy via Helm
         run: |
