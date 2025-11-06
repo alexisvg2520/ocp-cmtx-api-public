@@ -49,6 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Install OC CLI
         run: |
           curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz
@@ -58,7 +60,6 @@ jobs:
         uses: azure/setup-helm@v3
         with:
           version: v3.12.0
-      - uses: actions/checkout@v4
       - uses: redhat-actions/oc-login@v1
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
@@ -66,14 +67,8 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ecuaalejo2013-dev
 
-      - name: Deploy via Helm
+      - name: Helm upgrade
         run: |
-          helm upgrade --install ${{ env.IMAGE_NAME }} ./chart \
-            --set image.repository=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ github.sha }} \
-            --wait --atomic --timeout 5m
-
-      - name: Rollout status & pods
-        run: |
-          kubectl -n ecuaalejo2013-dev rollout status deploy/${{ env.IMAGE_NAME }} --timeout=120s
-          kubectl -n ecuaalejo2013-dev get pods -l app.kubernetes.io/name=${{ env.IMAGE_NAME }} -o wide
+          helm upgrade --install cmtx-api-public chart -n ecuaalejo2013-dev \
+            --set image.repository=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/cmtx-api-public \
+            --set image.tag=${{ github.sha }}
