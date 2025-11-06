@@ -1,11 +1,9 @@
-namespace: ecuaalejo2013-dev
-name: cmtx-api-public
-image:
-  repository: docker.io/alexisvg2520/cmtx-api-public
-  tag: latest
-resources:
-  requests: { cpu: 30m, memory: 128Mi }
-  limits:   { cpu: 200m, memory: 256Mi }
-env:
-  DATA_HOST: cmtx-api-data
-  DATA_PORT: "8080"
+FROM python:3.12-alpine
+# Usuario no-root para OCP "restricted"
+RUN adduser -D -u 10001 app
+WORKDIR /app
+COPY app.py /app/
+# Este servicio no usa PyMongo (solo proxy a DATA)
+USER 10001
+EXPOSE 8080
+CMD ["python", "app.py"]
