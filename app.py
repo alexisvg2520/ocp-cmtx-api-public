@@ -11,6 +11,13 @@ class Handler(BaseHTTPRequestHandler):
     def _diagnose_data(self) -> str:
         lines = [f"DATA_URL={DATA_URL}"]
         try:
+            with open("/etc/resolv.conf", "r", encoding="utf-8") as fh:
+                nameservers = [ln.strip() for ln in fh if ln.startswith("nameserver")]
+            if nameservers:
+                lines.append("resolv.conf " + ", ".join(nameservers))
+        except OSError as e:
+            lines.append(f"resolv.conf ✖ {e}")
+        try:
             infos = socket.getaddrinfo(DATA_HOST, DATA_PORT, proto=socket.IPPROTO_TCP)
             uniq = sorted({f"{info[4][0]}:{info[4][1]}" for info in infos})
             lines.append("DNS ✔ " + ", ".join(uniq))
